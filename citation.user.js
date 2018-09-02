@@ -2,6 +2,7 @@
 // @name        Citation Helper for StackExchange
 // @description Helps insert citations easily on StackExchange
 // @author      Gaurang Tandon
+
 // @match       *://*.askubuntu.com/*
 // @match       *://*.mathoverflow.net/*
 // @match       *://*.serverfault.com/*
@@ -17,8 +18,15 @@
 // @exclude     *://openid.stackexchange.com/*
 // @exclude     *://stackexchange.com/*
 // @exclude     *://*/review
+
 // @grant       none
-// @version     0.1
+
+// @require awesomplete.js
+// @require getcitation.js
+// @require modalhandler.js
+
+// @version     0.1.1
+
 // ==/UserScript==
 
 // https://repl.it/repls/CloudyFearfulTrust
