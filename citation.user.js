@@ -21,7 +21,9 @@
 
 // @grant       none
 
+// @require pre.js
 // @require awesomplete.js
+// @require casehelpers.js
 // @require getcitation.js
 // @require modalhandler.js
 
