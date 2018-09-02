@@ -204,3 +204,36 @@ if (!localStorage.getItem(chse.LS_KEY)) localStorage.setItem(chse.LS_KEY, "{}");
 		// https://stackoverflow.com/questions/400212/how-do-i-copy-to-the-clipboard-in-javascript
 	})();
 })();
+
+var styleEl = document.createElement("style"),
+	cssToUse = `
+.awesomplete{
+    position: inherit !important;
+    /* required to keep the input element hidden while modal is collapsed*/
+}
+
+.${DOI_BOX_CLASS}{
+    transition: 0.25s ease;
+    height: 0px;
+}
+
+.${DOI_BOX_CLASS} input{
+    display: inline-block;
+    width: 500px;
+    font-size: 14px;
+    padding: 8px;
+    position: inherit;
+}
+
+.${DOI_BOX_CLASS}.shown {
+     height: 45px;
+}
+
+.${DOI_BOX_CLASS} button{
+    position: inherit; /*allows buttons to flow in and out*/
+    margin: 5px;
+}
+`;
+styleEl.setAttribute("type", "text/css");
+styleEl.textContent = cssToUse;
+document.head.appendChild(styleEl);

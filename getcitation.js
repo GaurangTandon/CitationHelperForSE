@@ -77,7 +77,7 @@ function citeDOI(doi, callback, metadata) {
 
 	console.log(metadata);
 
-	if (TYPE === 1) {
+	if (chse.CITATION_TYPE === 1) {
 		callback.call(this, shortCiteDOI(doi, metadata));
 		return;
 	}
