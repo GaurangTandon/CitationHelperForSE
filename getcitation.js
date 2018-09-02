@@ -1,6 +1,6 @@
 // type of citation to insert; used by citeDOI
 // short citation = 1; long citation = 2;
-var TYPE = 1;
+window.CITATION_TYPE = 1;
 
 function citeWebsite(URL, callback) {
     // I cannot retrieve author/title of website without using my own external server :(
