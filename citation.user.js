@@ -29,6 +29,8 @@
 
 // ==/UserScript==
 
+/* global chse */
+
 // https://repl.it/repls/CloudyFearfulTrust
 // https://repl.it/repls/QuickImmenseActionscript
 // https://repl.it/repls/DiscretePastelErrors <-- latest working
@@ -44,3 +46,11 @@ issue raised - https://github.com/CrossRef/rest-api-doc/issues/381
 awaiting response - https://stackoverflow.com/questions/50771160/prevent-onclick-event-on-a-button-from-firing-when-hitting-enter-in-a-different
 2. doesn't work => 10.1007/s706-002-8245-0
  */
+
+function cacheDOI(doi, metadata) {
+	var object = JSON.parse(localStorage.getItem(chse.LS_KEY));
+
+	object[doi] = metadata;
+
+	localStorage.setItem(chse.LS_KEY, JSON.stringify(object));
+}
