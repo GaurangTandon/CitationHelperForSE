@@ -1,7 +1,7 @@
 /* global chse */
 var DOI_BOX_CLASS = "doi-box";
 
-if (!localStorage.getItem(LS_KEY)) localStorage.setItem(LS_KEY, "{}");
+if (!localStorage.getItem(chse.LS_KEY)) localStorage.setItem(chse.LS_KEY, "{}");
 
 (function() {
 	(function handleModals() {
@@ -170,7 +170,7 @@ if (!localStorage.getItem(LS_KEY)) localStorage.setItem(LS_KEY, "{}");
 			console.trace();
 		}
 
-		var cachedKeys = Object.keys(JSON.parse(localStorage.getItem(LS_KEY)));
+		var cachedKeys = Object.keys(JSON.parse(localStorage.getItem(chse.LS_KEY)));
 
 		setInterval(function() {
 			var cont = document.querySelector(".wmd-container:not(.doi-processed)"),

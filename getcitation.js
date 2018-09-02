@@ -30,7 +30,7 @@ function citeWebsite(URL, callback) {
 }
 
 function getDOIMetaData(doi, callback) {
-	var cachedObject = JSON.parse(localStorage.getItem(LS_KEY)),
+	var cachedObject = JSON.parse(localStorage.getItem(chse.LS_KEY)),
 		cachedMetadata;
 	if (cachedObject && (cachedMetadata = cachedObject[doi])) {
 		citeDOI(doi, callback, cachedMetadata);
@@ -122,7 +122,7 @@ function getPublishedYear(metadata) {
 
 function getShortJournalTitle(metadata) {
 	// user needs to install this via a GitHub Gist
-	var journalList = localStorage.getItem(J_KEY),
+	var journalList = localStorage.getItem(chse.J_KEY),
 		title = metadata["container-title"],
 		shortTitle = metadata["short-container-title"];
 
