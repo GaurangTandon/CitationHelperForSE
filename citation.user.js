@@ -21,7 +21,7 @@
 
 // @grant       none
 
-// @require awesomplete.css
+// @resource awesompleteCSS awesomplete.css
 // @require pre.js
 // @require awesomplete.js
 // @require casehelpers.js

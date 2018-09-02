@@ -237,3 +237,6 @@ var styleEl = document.createElement("style"),
 styleEl.setAttribute("type", "text/css");
 styleEl.textContent = cssToUse;
 document.head.appendChild(styleEl);
+
+var newCSS = GM_getResourceText("customCSS");
+GM_addStyle(newCSS);
