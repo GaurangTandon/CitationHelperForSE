@@ -19,7 +19,7 @@
 // @exclude     *://stackexchange.com/*
 // @exclude     *://*/review
 
-// @grant       none
+// @grant       GM_addStyle
 
 // @resource awesompleteCSS awesomplete.css
 // @require pre.js
@@ -50,10 +50,10 @@ awaiting response - https://stackoverflow.com/questions/50771160/prevent-onclick
 2. doesn't work => 10.1007/s706-002-8245-0
  */
 
-function cacheDOI(doi, metadata) {
+chse.cacheDOI = function(doi, metadata) {
 	var object = JSON.parse(localStorage.getItem(chse.LS_KEY));
 
 	object[doi] = metadata;
 
 	localStorage.setItem(chse.LS_KEY, JSON.stringify(object));
-}
+};

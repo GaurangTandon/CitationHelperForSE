@@ -4,7 +4,7 @@
 // short citation = 1; long citation = 2;
 chse.CITATION_TYPE = 1;
 
-function citeWebsite(URL, callback) {
+chse.citeWebsite = function(URL, callback) {
 	// I cannot retrieve author/title of website without using my own external server :(
 	// so just do the bare citation
 	var citation = URL + " (accessed ",
@@ -27,13 +27,13 @@ function citeWebsite(URL, callback) {
 	citation += months[time.getMonth()] + " " + time.getDate() + ", " + time.getFullYear() + ".";
 
 	callback.call(this, citation);
-}
+};
 
 function getDOIMetaData(doi, callback) {
 	var cachedObject = JSON.parse(localStorage.getItem(chse.LS_KEY)),
 		cachedMetadata;
 	if (cachedObject && (cachedMetadata = cachedObject[doi])) {
-		citeDOI(doi, callback, cachedMetadata);
+		chse.citeDOI(doi, callback, cachedMetadata);
 		return;
 	}
 
@@ -52,8 +52,8 @@ function getDOIMetaData(doi, callback) {
 			return;
 		}
 		metadata = response.message;
-		cacheDOI(doi, metadata);
-		citeDOI(doi, callback, metadata);
+		chse.cacheDOI(doi, metadata);
+		chse.citeDOI(doi, callback, metadata);
 	};
 }
 
@@ -67,7 +67,7 @@ function shortCiteDOI(doi, metadata) {
 }
 
 // doi must be the doi (10(.\d+)+) and nothing else
-function citeDOI(doi, callback, metadata) {
+chse.citeDOI = function(doi, callback, metadata) {
 	if (metadata === undefined) {
 		getDOIMetaData(doi, callback);
 		return;
@@ -89,7 +89,7 @@ function citeDOI(doi, callback, metadata) {
 	output += " [DOI: " + doi + "](https://doi.org/" + doi + ").";
 
 	callback.call(this, output);
-}
+};
 
 function getTitleYearIssuePagesForCitation(metadata) {
 	var issue = metadata.issue,
@@ -251,7 +251,7 @@ function getDOIFromPaperWebURL(originalURL) {
 	return null;
 }
 
-function getSource(URI) {
+chse.getURISource = function(URI) {
 	// URIs supported: "website"/"doi"/"paperWeb"
 	// "website" is any website like HyperPhysics
 	// "doi" is literally a DOI url
@@ -284,4 +284,4 @@ function getSource(URI) {
 	}
 
 	return [null, null];
-}
+};
