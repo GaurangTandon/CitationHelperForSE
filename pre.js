@@ -5,7 +5,7 @@ chse.LS_KEY = "cachedEntries";
 chse.J_KEY = "journalList";
 
 window.addEventListener("load", function init() {});
-var debugMode = true;
+var debugMode = false;
 chse.debugLog = function() {
 	if (debugMode) {
 		console.log(...arguments);

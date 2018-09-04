@@ -20,6 +20,7 @@
 // @exclude     *://*/review
 
 // @grant       GM_addStyle
+// @grant       GM_getResourceText
 
 // @resource awesompleteCSS awesomplete.css
 // @require pre.js
@@ -47,7 +48,7 @@ issue raised - https://github.com/CrossRef/rest-api-doc/issues/381
 
 1. pressing enter automatically submits my form to submit Short citation, also, it is hijacking the enter key on title and edit summary fields
 awaiting response - https://stackoverflow.com/questions/50771160/prevent-onclick-event-on-a-button-from-firing-when-hitting-enter-in-a-different
-2. doesn't work => 10.1007/s706-002-8245-0
+2. doesn't work => 10.1007/s706-002-8245-0 https://doi.org/10.1021/acs.joc.8b01627
  */
 
 chse.cacheDOI = function(doi, metadata) {
