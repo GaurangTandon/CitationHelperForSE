@@ -153,3 +153,5 @@
 		return true;
 	};
 })();
+
+chse.debugLog("Case helpers loaded");

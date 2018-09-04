@@ -238,3 +238,5 @@ document.head.appendChild(styleEl);
 
 var newCSS = GM_getResourceText("awesompleteCSS");
 GM_addStyle(newCSS);
+
+chse.debugLog("Modal handler loaded");

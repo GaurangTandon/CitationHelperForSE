@@ -285,3 +285,5 @@ chse.getURISource = function(URI) {
 
 	return [null, null];
 };
+
+chse.debugLog("Get citation loaded");
