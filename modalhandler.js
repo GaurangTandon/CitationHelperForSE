@@ -111,37 +111,82 @@ if (!localStorage.getItem(chse.LS_KEY)) localStorage.setItem(chse.LS_KEY, "{}");
 		StackExchange.MarkdownEditor.refreshAllPreviews();
 	}
 
-	function getCurrentReferenceCount(value) {
-		var match = value.match(/Reference(.|\n)+(\d)\. [a-zA-Z]/);
-		// without the ` [a-zA-Z]`, this match also extends to even digits inside DOI URLs
+	function getCitationIndicatorText(position) {
+		return "<sup>\\[" + position + "\\]</sup>";
+	}
 
-		if (!match) return 0;
-		else return +match[2];
+	/**
+	 * returns the reference superscript count (say 2) - for example -
+	 * by checking for all the superscripts that were ahead and behind the caret
+	 * at the time this gets executed.
+	 * So, something like: `[1]|[2][3]` returns `[2]` and changes the textarea
+	 * value to `[1]|[3][4]`. This has to also update the reference list at the bottom
+	 * of the textarea
+	 * @param {Element} textarea the textarea in which citation is to be inserted
+	 */
+	function setCurrentReferenceCount(textarea) {
+		var value = textarea.value,
+			caretPos = textarea.selectionStart,
+			valBefore = value.substring(0, caretPos),
+			valAfter = value.substring(caretPos),
+			lastIndexBeforeMatch = valBefore.match(/\\\[(\d+)\\\]<\/sup>(?!.*?<sup>\\\[)/),
+			currRefCount = lastIndexBeforeMatch ? +lastIndexBeforeMatch[1] : 0,
+			nextIndices = currRefCount + 1;
+
+		valAfter = valAfter.replace(/\\\[(\d+)\\\]/, function($0, $1) {
+			return "\\[" + ++nextIndices + "\\]";
+		});
+
+		textarea.value = valBefore + valAfter;
+		textarea.selectionEnd = textarea.selectionStart = caretPos;
+		textarea.focus();
+		return currRefCount;
+	}
+
+	function incrementRefBulletPoints(textAfterInsertionPoint, currPosition) {
+		return textAfterInsertionPoint.replace(/^\d+\s*\./gm, function($0) {
+			return ++currPosition + ".";
+		});
 	}
 
 	function insertLongCitation(container, citation) {
 		var textarea = container.parentNode.querySelector("textarea"),
 			selS = textarea.selectionStart,
 			selE = textarea.selectionEnd,
+			currRefCount = setCurrentReferenceCount(textarea),
+			refCountToInsert = currRefCount + 1,
+			superscriptedCite = getCitationIndicatorText(refCountToInsert),
 			value = textarea.value,
-			currRefCount = getCurrentReferenceCount(value),
-			superscriptedCite = "<sup>\\[" + (currRefCount + 1) + "\\]</sup>",
 			valBefore = value.substring(0, selS),
-			valAfter = value.substring(selE);
+			valAfter = value.substring(selE),
+			position;
 
 		value = valBefore + superscriptedCite + valAfter;
+		position = value.match(/Reference(.|\n)+\d\..+(\n|$)/);
 
-		if (currRefCount === 0) {
+		if (!position) {
 			value += "\n### References:\n\n1. " + citation;
 			textarea.value = value;
 		} else {
-			var position = value.match(/Reference(.|\n)+\d\..+(\n|$)/),
+			var refCountAlreadyExists = value.match(new RegExp(refCountToInsert + "\\..+(\\n|$)")),
+				positionToInsertReference = refCountAlreadyExists ? refCountAlreadyExists.index : null,
 				startOfReferences = position.index,
-				lastReferenceNewline = startOfReferences + position[0].length,
-				textBeforeLastRefNewLine = value.substring(0, lastReferenceNewline),
-				textAfterLastRefNewLine = value.substring(lastReferenceNewline),
-				valToInsert = "\n" + (currRefCount + 1) + ". " + citation + "\n",
-				newValue = textBeforeLastRefNewLine + valToInsert + textAfterLastRefNewLine;
+				lastReferenceNewline = startOfReferences + position[0].length;
+
+			if (!positionToInsertReference) positionToInsertReference = lastReferenceNewline;
+
+			var textBeforeInsertionPoint = value.substring(0, positionToInsertReference),
+				textAfterInsertionPoint = value.substring(positionToInsertReference),
+				valToInsert =
+					(textBeforeInsertionPoint.endsWith("\n") ? "" : "\n") +
+					refCountToInsert +
+					". " +
+					citation +
+					(textAfterInsertionPoint.startsWith("\n") ? "" : "\n"),
+				newValue =
+					textBeforeInsertionPoint +
+					valToInsert +
+					incrementRefBulletPoints(textAfterInsertionPoint, refCountToInsert);
 
 			textarea.value = newValue;
 		}
