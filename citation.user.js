@@ -60,5 +60,4 @@ chse.cacheDOI = function(doi, metadata) {
 	localStorage.setItem(chse.LS_KEY, JSON.stringify(object));
 };
 
-var journalList = JSON.parse(GM_getResourceText("journalNames"));
-console.log(journalList);
+chse.journalList = JSON.parse(GM_getResourceText("journalNames"));
