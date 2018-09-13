@@ -102,13 +102,13 @@ function getTitleYearIssuePagesForCitation(metadata) {
 	// books may not have volumes (10.1007/0-306-48639-3_12)
 	if (volume) {
 		output += ",** *" + volume;
-		output += (issue && "* (" + issue + ")") + (page ? (issue ? "," : "") : ".");
+		output += (issue && "* (" + issue + ")") + (page ? (issue ? "," : "") : "");
 	}
 	console.log(output);
 	// page numbers are absent in ACS Article ASAP service or some other papers (10.1371/journal.pone.0068486)
-	if (page) output += (volume ? " " : ",** ") + getPageRange(page) + ".";
+	if (page) output += (volume ? " " : ",** ") + getPageRange(page);
 	console.log(output);
-	if (!page && !volume) output += ".**";
+	if (!page && !volume) output += "**";
 
 	return output;
 }

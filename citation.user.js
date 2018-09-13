@@ -23,6 +23,7 @@
 // @grant       GM_getResourceText
 
 // @resource awesompleteCSS awesomplete.css
+// @resource journalNames journalNames.json
 // @require pre.js
 // @require awesomplete.js
 // @require casehelpers.js
@@ -58,3 +59,6 @@ chse.cacheDOI = function(doi, metadata) {
 
 	localStorage.setItem(chse.LS_KEY, JSON.stringify(object));
 };
+
+var journalList = JSON.parse(GM_getResourceText("journalNames"));
+console.log(journalList);
