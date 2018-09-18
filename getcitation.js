@@ -132,6 +132,17 @@ function getShortJournalTitle(metadata) {
 	return (chse.journalList && chse.journalList[title]) || (shortTitle.length !== 0 ? shortTitle[0] : title);
 }
 
+/**
+ * names like William von leu should be capitalized to
+ * William von Leu
+ * @param {String} name family name of an author
+ */
+function capitalizeSpecialAuthorFamilyNames(name) {
+	return name.replace(/von ([a-z])/, function($0, $1) {
+		return "von " + $1.toUpperCase();
+	});
+}
+
 function citeAuthors(authors) {
 	// there needn't be authors all the time; (10.1007/0-306-48639-3_12)
 	if (!authors || authors.length === 0) return "";
@@ -139,7 +150,10 @@ function citeAuthors(authors) {
 	var citation = "";
 	for (var i = 0, len = authors.length; i < len; i++) {
 		// 10.1248/cpb.49.1102 has all its author names in ALL CAPS; capitalize its only first letter
-		citation += chse.capitalizeFirstLetter(authors[i].family) + "," + getInitials(authors[i].given);
+		citation +=
+			capitalizeSpecialAuthorFamilyNames(chse.capitalizeFirstLetter(authors[i].family)) +
+			"," +
+			getInitials(authors[i].given);
 		citation += "; ";
 	}
 
@@ -164,6 +178,12 @@ function citeTitle(title) {
 	// some paper titles don't end with a .
 	// example: 10.1021/ci00024a006
 	if (title.charAt(len - 1) !== ".") title += ".";
+
+	// some paper titles have a phrase like (iii)
+	// correct it to (III) (ex: 10.1039/C5SC03429A)
+	title = title.replace(/\((i+)\)/, function($0, $1) {
+		return "(" + $1.toUpperCase() + ")";
+	});
 
 	return title;
 }
