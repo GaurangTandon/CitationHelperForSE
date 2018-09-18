@@ -129,7 +129,7 @@ function getShortJournalTitle(metadata) {
 	// (eg: missing the short-container-title field (10.1023/A:1008989800098); incorrect short form (Tetrahedron Letters instead of Tetrahedron Lett.)
 
 	// fallback to unabbrev. title in case neither list has the abbrev., or in case it's a book (not a journal - 10.1007/0-306-48639-3_12)
-	return chse.journalList ? chse.journalList[title] : shortTitle.length !== 0 ? shortTitle[0] : title;
+	return (chse.journalList && chse.journalList[title]) || (shortTitle.length !== 0 ? shortTitle[0] : title);
 }
 
 function citeAuthors(authors) {
