@@ -173,11 +173,9 @@ function citeTitle(title) {
 	// fix them to titlecase
 	if (chse.isAllUpcase(title)) title = chse.toTitleCase(title);
 
-	var len = title.length;
-
-	// some paper titles don't end with a .
-	// example: 10.1021/ci00024a006
-	if (title.charAt(len - 1) !== ".") title += ".";
+	// some paper titles don't end with punctuation
+	// example: 10.1021/ci00024a006, 10.1021/ja00178a014
+	if (!chse.endsWithPunctuation(title)) title += ".";
 
 	// some paper titles have a phrase like (iii)
 	// correct it to (III) (ex: 10.1039/C5SC03429A)

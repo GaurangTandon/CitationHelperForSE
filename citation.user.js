@@ -30,7 +30,7 @@
 // @require getcitation.js
 // @require modalhandler.js
 
-// @version     0.2.1
+// @version     0.2.2
 
 // ==/UserScript==
 

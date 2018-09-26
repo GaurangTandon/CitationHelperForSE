@@ -152,6 +152,13 @@
 
 		return true;
 	};
+
+	chse.endsWithPunctuation = function(string) {
+		var lastCharacter = string.charAt(string.length - 1),
+			punctuationMarks = [".", "?", "!"];
+
+		return punctuationMarks.indexOf(lastCharacter) > -1;
+	};
 })();
 
 chse.debugLog("Case helpers loaded");
