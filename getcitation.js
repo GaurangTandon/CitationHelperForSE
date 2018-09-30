@@ -229,8 +229,8 @@ function getDOIFromPaperWebURL(originalURL) {
 	if (/wiley/.test(URL)) {
 		return URL.match(/10\.\d+(\.\d+)?\/.+/)[0];
 	} else if (/springer/.test(URL)) {
-		var matcher = URL.match(/(10\.\d+(\.\d+)*?)(%2F)?(.+)/i);
-		return matcher[1] + "/" + matcher[4];
+		var matcher = URL.match(/(10\.\d+(\.\d+)*?)(%2F | \/)?(.+)/i);
+		return matcher[1] + (matcher[3] || "/") + matcher[4];
 	} else if (/sciencedirect/.test(URL)) {
 		var PII = URL.match(/pii\/(.+)\/?/i)[1],
 			sPresent = /pii\/s/i.test(URL),
