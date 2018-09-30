@@ -147,11 +147,17 @@ function citeAuthors(authors) {
 	// there needn't be authors all the time; (10.1007/0-306-48639-3_12)
 	if (!authors || authors.length === 0) return "";
 
-	var citation = "";
+	var citation = "",
+		familyName;
 	for (var i = 0, len = authors.length; i < len; i++) {
+		familyName = authors[i].family;
+		// ex: https://journals.aps.org/prx/abstract/10.1103/PhysRevX.7.031059
+		// last entry is not an author actually
+		if (!familyName) continue;
+
 		// 10.1248/cpb.49.1102 has all its author names in ALL CAPS; capitalize its only first letter
 		citation +=
-			capitalizeSpecialAuthorFamilyNames(chse.capitalizeFirstLetter(authors[i].family)) +
+			capitalizeSpecialAuthorFamilyNames(chse.capitalizeFirstLetter(familyName)) +
 			"," +
 			getInitials(authors[i].given);
 		citation += "; ";
@@ -226,7 +232,7 @@ function getDOIFromPaperWebURL(originalURL) {
 		URL = originalURL;
 	if (queryMatch) URL = URL.substring(0, queryMatch.index);
 
-	if (/wiley/.test(URL)) {
+	if (/wiley|journals.aps.org/.test(URL)) {
 		return URL.match(/10\.\d+(\.\d+)?\/.+/)[0];
 	} else if (/springer/.test(URL)) {
 		var matcher = URL.match(/(10\.\d+(\.\d+)*?)(%2F | \/)?(.+)/i);
