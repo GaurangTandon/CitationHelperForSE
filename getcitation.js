@@ -232,7 +232,7 @@ function getDOIFromPaperWebURL(originalURL) {
 		URL = originalURL;
 	if (queryMatch) URL = URL.substring(0, queryMatch.index);
 
-	if (/wiley|journals.aps.org/.test(URL)) {
+	if (/wiley|journals.aps.org|annualreviews.org/.test(URL)) {
 		return URL.match(/10\.\d+(\.\d+)?\/.+/)[0];
 	} else if (/springer/.test(URL)) {
 		var matcher = URL.match(/(10\.\d+(\.\d+)*?)(%2F | \/)?(.+)/i);
