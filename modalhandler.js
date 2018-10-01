@@ -41,7 +41,6 @@ if (!localStorage.getItem(chse.LS_KEY)) localStorage.setItem(chse.LS_KEY, "{}");
 			if (e.keyCode === 13) {
 				e.preventDefault();
 				e.stopPropagation();
-				console.log("I tried!");
 				return false;
 			}
 		};
@@ -129,7 +128,8 @@ if (!localStorage.getItem(chse.LS_KEY)) localStorage.setItem(chse.LS_KEY, "{}");
 			caretPos = textarea.selectionStart,
 			valBefore = value.substring(0, caretPos),
 			valAfter = value.substring(caretPos),
-			lastIndexBeforeMatch = valBefore.match(/\\\[(\d+)\\\]<\/sup>(?!.*?<sup>\\\[)/),
+			// newlines return only the first match, see https://regex101.com/r/BFNUEI/1
+			lastIndexBeforeMatch = valBefore.replace(/[\r\n]/, "").match(/\\\[(\d+)\\\]<\/sup>(?!.*?<sup>\\\[)/),
 			currRefCount = lastIndexBeforeMatch ? +lastIndexBeforeMatch[1] : 0,
 			nextIndices = currRefCount + 1;
 
