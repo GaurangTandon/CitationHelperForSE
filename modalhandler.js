@@ -133,7 +133,7 @@ if (!localStorage.getItem(chse.LS_KEY)) localStorage.setItem(chse.LS_KEY, "{}");
 			currRefCount = lastIndexBeforeMatch ? +lastIndexBeforeMatch[1] : 0,
 			nextIndices = currRefCount + 1;
 
-		valAfter = valAfter.replace(/\\\[(\d+)\\\]/, function($0, $1) {
+		valAfter = valAfter.replace(/\\\[\d+\\\]/g, function() {
 			return "\\[" + ++nextIndices + "\\]";
 		});
 
@@ -165,7 +165,8 @@ if (!localStorage.getItem(chse.LS_KEY)) localStorage.setItem(chse.LS_KEY, "{}");
 		position = value.match(/Reference(.|\n)+\d\..+(\n|$)/);
 
 		if (!position) {
-			value += "\n### References:\n\n1. " + citation;
+			value = value.replace(/\n*$/, "");
+			value += "\n\n### References:\n\n1. " + citation;
 			textarea.value = value;
 		} else {
 			var refCountAlreadyExists = value.match(new RegExp(refCountToInsert + "\\..+(\\n|$)")),
