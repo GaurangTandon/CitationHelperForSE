@@ -41,7 +41,6 @@ if (!localStorage.getItem(chse.LS_KEY)) localStorage.setItem(chse.LS_KEY, "{}");
 			if (e.keyCode === 13) {
 				e.preventDefault();
 				e.stopPropagation();
-				console.log("I tried!");
 				return false;
 			}
 		};
@@ -129,11 +128,12 @@ if (!localStorage.getItem(chse.LS_KEY)) localStorage.setItem(chse.LS_KEY, "{}");
 			caretPos = textarea.selectionStart,
 			valBefore = value.substring(0, caretPos),
 			valAfter = value.substring(caretPos),
-			lastIndexBeforeMatch = valBefore.match(/\\\[(\d+)\\\]<\/sup>(?!.*?<sup>\\\[)/),
+			// newlines return only the first match, see https://regex101.com/r/BFNUEI/1
+			lastIndexBeforeMatch = valBefore.replace(/[\r\n]/g, "").match(/\\\[(\d+)\\\]<\/sup>(?!.*?<sup>\\\[)/),
 			currRefCount = lastIndexBeforeMatch ? +lastIndexBeforeMatch[1] : 0,
 			nextIndices = currRefCount + 1;
 
-		valAfter = valAfter.replace(/\\\[(\d+)\\\]/, function($0, $1) {
+		valAfter = valAfter.replace(/\\\[\d+\\\]/g, function() {
 			return "\\[" + ++nextIndices + "\\]";
 		});
 
@@ -165,7 +165,8 @@ if (!localStorage.getItem(chse.LS_KEY)) localStorage.setItem(chse.LS_KEY, "{}");
 		position = value.match(/Reference(.|\n)+\d\..+(\n|$)/);
 
 		if (!position) {
-			value += "\n### References:\n\n1. " + citation;
+			value = value.replace(/\n*$/, "");
+			value += "\n\n### References:\n\n1. " + citation;
 			textarea.value = value;
 		} else {
 			var refCountAlreadyExists = value.match(new RegExp(refCountToInsert + "\\..+(\\n|$)")),
