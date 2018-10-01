@@ -30,7 +30,7 @@
 // @require getcitation.js
 // @require modalhandler.js
 
-// @version     dev0.3.1
+// @version     dev0.3.2
 // @updateURL   https://github.com/GaurangTandon/CitationHelperForSE/blob/master/citation.user.js
 
 // ==/UserScript==
