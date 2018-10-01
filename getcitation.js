@@ -157,11 +157,11 @@ function getShortJournalTitle(metadata) {
  */
 function capitalizeSpecialAuthorFamilyNames(name) {
 	return name
-		.replace(/von ([a-z])/, function($0, $1) {
-			return "von " + $1.toUpperCase();
+		.replace(/([- ])([a-z])/gi, function($0, $1, $2) {
+			return $1 + $2.toUpperCase();
 		})
-		.replace(/-([a-z])/i, function($0, $1) {
-			return "-" + $1.toUpperCase();
+		.replace(/von ([a-z])/gi, function($0, $1) {
+			return "von " + $1.toUpperCase();
 		});
 }
 
