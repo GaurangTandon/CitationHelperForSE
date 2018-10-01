@@ -129,7 +129,7 @@ if (!localStorage.getItem(chse.LS_KEY)) localStorage.setItem(chse.LS_KEY, "{}");
 			valBefore = value.substring(0, caretPos),
 			valAfter = value.substring(caretPos),
 			// newlines return only the first match, see https://regex101.com/r/BFNUEI/1
-			lastIndexBeforeMatch = valBefore.replace(/[\r\n]/, "").match(/\\\[(\d+)\\\]<\/sup>(?!.*?<sup>\\\[)/),
+			lastIndexBeforeMatch = valBefore.replace(/[\r\n]/g, "").match(/\\\[(\d+)\\\]<\/sup>(?!.*?<sup>\\\[)/),
 			currRefCount = lastIndexBeforeMatch ? +lastIndexBeforeMatch[1] : 0,
 			nextIndices = currRefCount + 1;
 
