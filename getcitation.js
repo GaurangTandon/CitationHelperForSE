@@ -138,9 +138,13 @@ function getShortJournalTitle(metadata) {
  * @param {String} name family name of an author
  */
 function capitalizeSpecialAuthorFamilyNames(name) {
-	return name.replace(/von ([a-z])/, function($0, $1) {
-		return "von " + $1.toUpperCase();
-	});
+	return name
+		.replace(/von ([a-z])/, function($0, $1) {
+			return "von " + $1.toUpperCase();
+		})
+		.replace(/-([a-z])/i, function($0, $1) {
+			return "-" + $1.toUpperCase();
+		});
 }
 
 function citeAuthors(authors) {
