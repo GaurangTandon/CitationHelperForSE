@@ -38,22 +38,32 @@ function getDOIMetaData(doi, callback) {
 	}
 
 	// ISSUE: I'm supposed to send my email along with this API call, how'd I do that?
-	var xhttp = new XMLHttpRequest();
-	xhttp.open("GET", "https://api.crossref.org/works/" + doi, true);
-	xhttp.setRequestHeader("Content-type", "text/plain");
-	xhttp.send();
+	var xhr = new XMLHttpRequest();
+	xhr.open("GET", "https://api.crossref.org/works/" + doi, true);
+	xhr.setRequestHeader("Content-type", "text/plain");
+	xhr.send();
 
-	xhttp.onload = function(e) {
-		var response = JSON.parse(e.srcElement.response),
-			metadata;
+	xhr.onload = function(e) {
+		var response, metadata;
+
+		try {
+			response = JSON.parse(e.srcElement.response);
+		} catch (error) {
+			chse.citeDOI(doi, callback, false);
+			return;
+		}
+
 		if (response.status !== "ok") {
-			// possibly not a cross-ref DOI
-			alert("Couldn't fetch citation for DOI: " + doi + ". Please report the doi to the userscript author.");
+			chse.citeDOI(doi, callback, false);
 			return;
 		}
 		metadata = response.message;
 		chse.cacheDOI(doi, metadata);
 		chse.citeDOI(doi, callback, metadata);
+	};
+
+	xhr.onerror = function() {
+		chse.citeDOI(doi, callback, false);
 	};
 }
 
@@ -66,27 +76,35 @@ function shortCiteDOI(doi, metadata) {
 	return output;
 }
 
+chse.ERROR_MSG = "<!-- Citation lookup unsuccessful -->";
+
 // doi must be the doi (10(.\d+)+) and nothing else
 chse.citeDOI = function(doi, callback, metadata) {
+	var output = "";
+
 	if (metadata === undefined) {
 		getDOIMetaData(doi, callback);
 		return;
-	}
-
-	var output = "";
-
-	console.log(metadata);
-
-	if (chse.CITATION_TYPE === 1) {
-		callback.call(this, shortCiteDOI(doi, metadata));
+	} else if (metadata === false) {
+		output = chse.ERROR_MSG;
+		callback.call(this, output);
 		return;
 	}
 
-	output += citeAuthors(metadata.author);
-	output += citeTitle(metadata.title[0]) + " ";
-	output += getTitleYearIssuePagesForCitation(metadata);
+	try {
+		if (chse.CITATION_TYPE === 1) {
+			callback.call(this, shortCiteDOI(doi, metadata));
+			return;
+		}
 
-	output += " [DOI: " + doi + "](https://doi.org/" + doi + ").";
+		output += citeAuthors(metadata.author);
+		output += citeTitle(metadata.title[0]) + " ";
+		output += getTitleYearIssuePagesForCitation(metadata);
+
+		output += " [DOI: " + doi + "](https://doi.org/" + doi + ").";
+	} catch (error) {
+		output = chse.ERROR_MSG;
+	}
 
 	callback.call(this, output);
 };
