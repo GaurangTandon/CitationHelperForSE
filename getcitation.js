@@ -49,11 +49,13 @@ function getDOIMetaData(doi, callback) {
 		try {
 			response = JSON.parse(e.srcElement.response);
 		} catch (error) {
+			console.log("JSON.parse failed", this, e);
 			chse.citeDOI(doi, callback, false);
 			return;
 		}
 
 		if (response.status !== "ok") {
+			console.log("response.status not ok", this, e);
 			chse.citeDOI(doi, callback, false);
 			return;
 		}
@@ -62,7 +64,8 @@ function getDOIMetaData(doi, callback) {
 		chse.citeDOI(doi, callback, metadata);
 	};
 
-	xhr.onerror = function() {
+	xhr.onerror = function(error) {
+		console.log("xhr.onerror", this, error);
 		chse.citeDOI(doi, callback, false);
 	};
 }
@@ -103,6 +106,7 @@ chse.citeDOI = function(doi, callback, metadata) {
 
 		output += " [DOI: " + doi + "](https://doi.org/" + doi + ").";
 	} catch (error) {
+		console.log("citing problem", error);
 		output = chse.ERROR_MSG;
 	}
 
@@ -254,7 +258,7 @@ function getDOIFromPaperWebURL(originalURL) {
 		URL = originalURL;
 	if (queryMatch) URL = URL.substring(0, queryMatch.index);
 
-	if (/wiley|journals.aps.org|annualreviews.org/.test(URL)) {
+	if (/wiley|journals\.aps\.org|annualreviews\.org|aip\.scitation\.org/.test(URL)) {
 		return URL.match(/10\.\d+(\.\d+)?\/.+/)[0];
 	} else if (/springer/.test(URL)) {
 		var matcher = URL.match(/(10\.\d+(\.\d+)*?)(%2F | \/)?(.+)/i);
