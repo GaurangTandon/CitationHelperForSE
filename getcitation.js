@@ -286,8 +286,8 @@ function getDOIFromPaperWebURL(originalURL) {
 		return "10.1016/" + doi;
 	} else if (/acs/.test(URL)) {
 		return URL.match(/10\.\d+(\.\d+)?\/.+/)[0];
-	} else if (/nature/.test(URL)) {
-		return "10.1038/" + URL.match(/\/(s.+)/)[1];
+	} else if (/nature\./.test(URL)) {
+		return "10.1038/" + URL.match(/articles\/([^/]+)/)[1];
 	} else if (/rsc/.test(URL)) {
 		// rsc url may not always have unauth at its end
 		return "10.1039/" + (URL.match(/\/([\w]+)\/unAuth$/i) || URL.match(/\/([\w]+)$/))[1];
