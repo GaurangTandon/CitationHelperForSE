@@ -23,7 +23,6 @@
 // @grant       GM_getResourceText
 
 // @resource awesompleteCSS awesomplete.css
-// @resource modalCSS modal.css
 // @resource journalNames journalNames.json
 // @require pre.js
 // @require awesomplete.js
@@ -31,7 +30,7 @@
 // @require getcitation.js
 // @require modalhandler.js
 
-// @version     dev0.4.0
+// @version     0.5.0
 // @updateURL   https://github.com/GaurangTandon/CitationHelperForSE/blob/master/citation.user.js
 
 // ==/UserScript==

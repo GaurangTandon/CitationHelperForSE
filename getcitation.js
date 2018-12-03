@@ -200,10 +200,22 @@ function getInitials(givenName) {
 	return givenName.split(" ").reduce((citation, name) => citation + " " + name[0] + ".", "");
 }
 
+/**
+ *
+ * @param {String} title the title to cite properly
+ */
 function citeTitle(title) {
+	var greekLetterRegex = /\.[a-z]+\./gi;
+
 	// some titles are received in ALL CAPS (10.1021/ja01532a066)
 	// fix them to titlecase
 	if (chse.isAllUpcase(title)) title = chse.toTitleCase(title);
+
+	// issues#19
+	if (greekLetterRegex.test(title)) {
+		// convert to html entity
+		title = title.replace(greekLetterRegex, $0 => "&" + $0.toLowerCase().substring(1, $0.length - 1) + ";");
+	}
 
 	// some paper titles don't end with punctuation
 	// example: 10.1021/ci00024a006, 10.1021/ja00178a014
