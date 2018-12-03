@@ -23,13 +23,15 @@
 // @grant       GM_getResourceText
 
 // @resource awesompleteCSS awesomplete.css
+// @resource journalNames journalNames.json
 // @require pre.js
 // @require awesomplete.js
 // @require casehelpers.js
 // @require getcitation.js
 // @require modalhandler.js
 
-// @version     0.1.1
+// @version     dev0.4.0
+// @updateURL   https://github.com/GaurangTandon/CitationHelperForSE/blob/master/citation.user.js
 
 // ==/UserScript==
 
@@ -58,3 +60,5 @@ chse.cacheDOI = function(doi, metadata) {
 
 	localStorage.setItem(chse.LS_KEY, JSON.stringify(object));
 };
+
+chse.journalList = JSON.parse(GM_getResourceText("journalNames"));

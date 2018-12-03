@@ -38,22 +38,35 @@ function getDOIMetaData(doi, callback) {
 	}
 
 	// ISSUE: I'm supposed to send my email along with this API call, how'd I do that?
-	var xhttp = new XMLHttpRequest();
-	xhttp.open("GET", "https://api.crossref.org/works/" + doi, true);
-	xhttp.setRequestHeader("Content-type", "text/plain");
-	xhttp.send();
+	var xhr = new XMLHttpRequest();
+	xhr.open("GET", "https://api.crossref.org/works/" + doi, true);
+	xhr.setRequestHeader("Content-type", "text/plain");
+	xhr.send();
 
-	xhttp.onload = function(e) {
-		var response = JSON.parse(e.srcElement.response),
-			metadata;
+	xhr.onload = function(e) {
+		var response, metadata;
+
+		try {
+			response = JSON.parse(e.srcElement.response);
+		} catch (error) {
+			console.log("JSON.parse failed", this, e);
+			chse.citeDOI(doi, callback, false);
+			return;
+		}
+
 		if (response.status !== "ok") {
-			// possibly not a cross-ref DOI
-			alert("Couldn't fetch citation for DOI: " + doi + ". Please report the doi to the userscript author.");
+			console.log("response.status not ok", this, e);
+			chse.citeDOI(doi, callback, false);
 			return;
 		}
 		metadata = response.message;
 		chse.cacheDOI(doi, metadata);
 		chse.citeDOI(doi, callback, metadata);
+	};
+
+	xhr.onerror = function(error) {
+		console.log("xhr.onerror", this, error);
+		chse.citeDOI(doi, callback, false);
 	};
 }
 
@@ -66,27 +79,36 @@ function shortCiteDOI(doi, metadata) {
 	return output;
 }
 
+chse.ERROR_MSG = "<!-- Citation lookup unsuccessful -->";
+
 // doi must be the doi (10(.\d+)+) and nothing else
 chse.citeDOI = function(doi, callback, metadata) {
+	var output = "";
+
 	if (metadata === undefined) {
 		getDOIMetaData(doi, callback);
 		return;
-	}
-
-	var output = "";
-
-	console.log(metadata);
-
-	if (chse.CITATION_TYPE === 1) {
-		callback.call(this, shortCiteDOI(doi, metadata));
+	} else if (metadata === false) {
+		output = chse.ERROR_MSG;
+		callback.call(this, output);
 		return;
 	}
 
-	output += citeAuthors(metadata.author);
-	output += citeTitle(metadata.title[0]) + " ";
-	output += getTitleYearIssuePagesForCitation(metadata);
+	try {
+		if (chse.CITATION_TYPE === 1) {
+			callback.call(this, shortCiteDOI(doi, metadata));
+			return;
+		}
 
-	output += " [DOI: " + doi + "](https://doi.org/" + doi + ").";
+		output += citeAuthors(metadata.author);
+		output += citeTitle(metadata.title[0]) + " ";
+		output += getTitleYearIssuePagesForCitation(metadata);
+
+		output += " [DOI: " + doi + "](https://doi.org/" + doi + ").";
+	} catch (error) {
+		console.log("citing problem", error);
+		output = chse.ERROR_MSG;
+	}
 
 	callback.call(this, output);
 };
@@ -102,13 +124,13 @@ function getTitleYearIssuePagesForCitation(metadata) {
 	// books may not have volumes (10.1007/0-306-48639-3_12)
 	if (volume) {
 		output += ",** *" + volume;
-		output += (issue && "* (" + issue + ")") + (page ? (issue ? "," : "") : ".");
+		output += (issue ? "* (" + issue + ")" : "*,") + (page ? (issue ? "," : "") : "");
 	}
 	console.log(output);
 	// page numbers are absent in ACS Article ASAP service or some other papers (10.1371/journal.pone.0068486)
-	if (page) output += (volume ? " " : ",** ") + getPageRange(page) + ".";
+	if (page) output += (volume ? " " : ",** ") + getPageRange(page);
 	console.log(output);
-	if (!page && !volume) output += ".**";
+	if (!page && !volume) output += "**";
 
 	return output;
 }
@@ -122,25 +144,48 @@ function getPublishedYear(metadata) {
 
 function getShortJournalTitle(metadata) {
 	// user needs to install this via a GitHub Gist
-	var journalList = localStorage.getItem(chse.J_KEY),
-		title = metadata["container-title"],
+	var title = metadata["container-title"],
 		shortTitle = metadata["short-container-title"];
 
 	// fallback to sometimes inaccurate CrossRef results in case user didn't install Gist
 	// (eg: missing the short-container-title field (10.1023/A:1008989800098); incorrect short form (Tetrahedron Letters instead of Tetrahedron Lett.)
 
 	// fallback to unabbrev. title in case neither list has the abbrev., or in case it's a book (not a journal - 10.1007/0-306-48639-3_12)
-	return journalList ? journalList[title] : shortTitle.length !== 0 ? shortTitle[0] : title;
+	return (chse.journalList && chse.journalList[title]) || (shortTitle.length !== 0 ? shortTitle[0] : title);
+}
+
+/**
+ * names like William von leu should be capitalized to
+ * William von Leu
+ * @param {String} name family name of an author
+ */
+function capitalizeSpecialAuthorFamilyNames(name) {
+	return name
+		.replace(/([- ])([a-z])/gi, function($0, $1, $2) {
+			return $1 + $2.toUpperCase();
+		})
+		.replace(/von ([a-z])/gi, function($0, $1) {
+			return "von " + $1.toUpperCase();
+		});
 }
 
 function citeAuthors(authors) {
 	// there needn't be authors all the time; (10.1007/0-306-48639-3_12)
 	if (!authors || authors.length === 0) return "";
 
-	var citation = "";
+	var citation = "",
+		familyName;
 	for (var i = 0, len = authors.length; i < len; i++) {
+		familyName = authors[i].family;
+		// ex: https://journals.aps.org/prx/abstract/10.1103/PhysRevX.7.031059
+		// last entry is not an author actually
+		if (!familyName) continue;
+
 		// 10.1248/cpb.49.1102 has all its author names in ALL CAPS; capitalize its only first letter
-		citation += chse.capitalizeFirstLetter(authors[i].family) + "," + getInitials(authors[i].given);
+		citation +=
+			capitalizeSpecialAuthorFamilyNames(chse.capitalizeFirstLetter(familyName)) +
+			"," +
+			getInitials(authors[i].given);
 		citation += "; ";
 	}
 
@@ -160,11 +205,15 @@ function citeTitle(title) {
 	// fix them to titlecase
 	if (chse.isAllUpcase(title)) title = chse.toTitleCase(title);
 
-	var len = title.length;
+	// some paper titles don't end with punctuation
+	// example: 10.1021/ci00024a006, 10.1021/ja00178a014
+	if (!chse.endsWithPunctuation(title)) title += ".";
 
-	// some paper titles don't end with a .
-	// example: 10.1021/ci00024a006
-	if (title.charAt(len - 1) !== ".") title += ".";
+	// some paper titles have a phrase like (iii)
+	// correct it to (III) (ex: 10.1039/C5SC03429A)
+	title = title.replace(/\((i+)\)/, function($0, $1) {
+		return "(" + $1.toUpperCase() + ")";
+	});
 
 	return title;
 }
@@ -209,11 +258,11 @@ function getDOIFromPaperWebURL(originalURL) {
 		URL = originalURL;
 	if (queryMatch) URL = URL.substring(0, queryMatch.index);
 
-	if (/wiley/.test(URL)) {
+	if (/wiley|journals\.aps\.org|annualreviews\.org|aip\.scitation\.org/.test(URL)) {
 		return URL.match(/10\.\d+(\.\d+)?\/.+/)[0];
 	} else if (/springer/.test(URL)) {
-		var matcher = URL.match(/(10\.\d+(\.\d+)*?)(%2F)?(.+)/i);
-		return matcher[1] + "/" + matcher[4];
+		var matcher = URL.match(/(10\.\d+(\.\d+)*?)(%2F | \/)?(.+)/i);
+		return matcher[1] + (matcher[3] || "/") + matcher[4];
 	} else if (/sciencedirect/.test(URL)) {
 		var PII = URL.match(/pii\/(.+)\/?/i)[1],
 			sPresent = /pii\/s/i.test(URL),
@@ -237,8 +286,8 @@ function getDOIFromPaperWebURL(originalURL) {
 		return "10.1016/" + doi;
 	} else if (/acs/.test(URL)) {
 		return URL.match(/10\.\d+(\.\d+)?\/.+/)[0];
-	} else if (/nature/.test(URL)) {
-		return "10.1038/" + URL.match(/\/(s.+)/)[1];
+	} else if (/nature\./.test(URL)) {
+		return "10.1038/" + URL.match(/articles\/([^/]+)/)[1];
 	} else if (/rsc/.test(URL)) {
 		// rsc url may not always have unauth at its end
 		return "10.1039/" + (URL.match(/\/([\w]+)\/unAuth$/i) || URL.match(/\/([\w]+)$/))[1];
