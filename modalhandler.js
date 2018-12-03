@@ -3,6 +3,8 @@ var DOI_BOX_CLASS = "doi-box";
 
 if (!localStorage.getItem(chse.LS_KEY)) localStorage.setItem(chse.LS_KEY, "{}");
 
+GM_addStyle(GM_getResourceText("modalCSS"));
+
 (function handleModals() {
 	var PLACEHOLDER = "reference (DOI/URL/plain text)";
 
@@ -14,7 +16,9 @@ if (!localStorage.getItem(chse.LS_KEY)) localStorage.setItem(chse.LS_KEY, "{}");
 
 		ul.insertBefore(li, lastChild);
 
-		li.className = "wmd-button wmd-doi tmAdded";
+		// class wmd-button does not play nicely, adds an overlay
+		// of the bold button by default
+		li.className = "wmd-my-button wmd-doi tmAdded";
 		// tmAdded required when also running this userscript https://github.com/BrockA/SE-misc
 		li.innerHTML = "<span>doi</span>";
 		li.title = "insert doi";
@@ -144,7 +148,7 @@ if (!localStorage.getItem(chse.LS_KEY)) localStorage.setItem(chse.LS_KEY, "{}");
 	}
 
 	function incrementRefBulletPoints(textAfterInsertionPoint, currPosition) {
-		return textAfterInsertionPoint.replace(/^\d+\s*\./gm, function($0) {
+		return textAfterInsertionPoint.replace(/^\d+\s*\./gm, function() {
 			return ++currPosition + ".";
 		});
 	}
@@ -200,12 +204,19 @@ if (!localStorage.getItem(chse.LS_KEY)) localStorage.setItem(chse.LS_KEY, "{}");
 
 	function toggleModal(container) {
 		var div = container.querySelector("." + DOI_BOX_CLASS),
+			buttonBar = div.parentElement,
 			input = div.querySelector("input");
 
 		if (div.classList.contains("shown")) {
 			div.classList.remove("shown");
+			buttonBar.style.height = "0px";
+			buttonBar.style.overflow = "hidden";
 		} else {
 			div.classList.add("shown");
+			// original height is 90px, 100px required to accommodate
+			// margin top 10px
+			buttonBar.style.height = "100px";
+			buttonBar.style.overflow = "visible";
 			input.value = "";
 			input.focus();
 		}
@@ -256,9 +267,20 @@ var styleEl = document.createElement("style"),
     /* required to keep the input element hidden while modal is collapsed*/
 }
 
+.wmd-my-button {
+    max-width: 28px;
+    height: 44px;
+    flex: 10 0 23px;
+    padding: 0;
+    padding: 12px 0 0 0;
+    text-align: center;
+    cursor: pointer;
+}
+
 .${DOI_BOX_CLASS}{
     transition: 0.25s ease;
     height: 0px;
+	padding-left: 10px;
 }
 
 .${DOI_BOX_CLASS} input{
@@ -270,7 +292,7 @@ var styleEl = document.createElement("style"),
 }
 
 .${DOI_BOX_CLASS}.shown {
-     height: 45px;
+	 height: 45px;
 }
 
 .${DOI_BOX_CLASS} button{
