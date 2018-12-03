@@ -23,6 +23,7 @@
 // @grant       GM_getResourceText
 
 // @resource awesompleteCSS awesomplete.css
+// @resource modalCSS modal.css
 // @resource journalNames journalNames.json
 // @require pre.js
 // @require awesomplete.js
