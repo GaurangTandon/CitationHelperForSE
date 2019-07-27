@@ -30,7 +30,7 @@
 // @require getcitation.js
 // @require modalhandler.js
 
-// @version     0.5.0
+// @version     0.5.1
 // @updateURL   https://github.com/GaurangTandon/CitationHelperForSE/blob/master/citation.user.js
 
 // ==/UserScript==
@@ -53,7 +53,7 @@ awaiting response - https://stackoverflow.com/questions/50771160/prevent-onclick
 2. doesn't work => 10.1007/s706-002-8245-0 https://doi.org/10.1021/acs.joc.8b01627
  */
 
-chse.cacheDOI = function(doi, metadata) {
+chse.cacheDOI = function (doi, metadata) {
 	var object = JSON.parse(localStorage.getItem(chse.LS_KEY));
 
 	object[doi] = metadata;
