@@ -4,7 +4,7 @@
 // short citation = 1; long citation = 2;
 chse.CITATION_TYPE = 1;
 
-chse.citeWebsite = function(URL, callback) {
+chse.citeWebsite = function (URL, callback) {
 	// I cannot retrieve author/title of website without using my own external server :(
 	// so just do the bare citation
 	var citation = URL + " (accessed ",
@@ -43,7 +43,7 @@ function getDOIMetaData(doi, callback) {
 	xhr.setRequestHeader("Content-type", "text/plain");
 	xhr.send();
 
-	xhr.onload = function(e) {
+	xhr.onload = function (e) {
 		var response, metadata;
 
 		try {
@@ -64,7 +64,7 @@ function getDOIMetaData(doi, callback) {
 		chse.citeDOI(doi, callback, metadata);
 	};
 
-	xhr.onerror = function(error) {
+	xhr.onerror = function (error) {
 		console.log("xhr.onerror", this, error);
 		chse.citeDOI(doi, callback, false);
 	};
@@ -82,7 +82,7 @@ function shortCiteDOI(doi, metadata) {
 chse.ERROR_MSG = "<!-- Citation lookup unsuccessful -->";
 
 // doi must be the doi (10(.\d+)+) and nothing else
-chse.citeDOI = function(doi, callback, metadata) {
+chse.citeDOI = function (doi, callback, metadata) {
 	var output = "";
 
 	if (metadata === undefined) {
@@ -151,7 +151,15 @@ function getShortJournalTitle(metadata) {
 	// (eg: missing the short-container-title field (10.1023/A:1008989800098); incorrect short form (Tetrahedron Letters instead of Tetrahedron Lett.)
 
 	// fallback to unabbrev. title in case neither list has the abbrev., or in case it's a book (not a journal - 10.1007/0-306-48639-3_12)
-	return (chse.journalList && chse.journalList[title]) || (shortTitle.length !== 0 ? shortTitle[0] : title);
+	var res = (chse.journalList && chse.journalList[title]) || (shortTitle.length !== 0 ? shortTitle[0] : title),
+		journalAbbrevs = {
+			"Proceedings of the National Academy of Sciences": "Proc. Acad. Natl. Sci. U. S. A.",
+			"The Journal of Chemical Physics": "J. Chem. Phys.",
+			"Journal of Magnetic Resonance": "J. Magn. Reson.",
+			"Progress in Nuclear Magnetic Resonance Spectroscopy": "Prog. Nucl. Magn. Reson. Spectrosc.",
+		};
+
+	return journalAbbrevs[res] ? journalAbbrevs[res] : res;
 }
 
 /**
@@ -161,10 +169,10 @@ function getShortJournalTitle(metadata) {
  */
 function capitalizeSpecialAuthorFamilyNames(name) {
 	return name
-		.replace(/([- ])([a-z])/gi, function($0, $1, $2) {
+		.replace(/([- ])([a-z])/gi, function ($0, $1, $2) {
 			return $1 + $2.toUpperCase();
 		})
-		.replace(/von ([a-z])/gi, function($0, $1) {
+		.replace(/von ([a-z])/gi, function ($0, $1) {
 			return "von " + $1.toUpperCase();
 		});
 }
@@ -223,7 +231,7 @@ function citeTitle(title) {
 
 	// some paper titles have a phrase like (iii)
 	// correct it to (III) (ex: 10.1039/C5SC03429A)
-	title = title.replace(/\((i+)\)/, function($0, $1) {
+	title = title.replace(/\((i+)\)/, function ($0, $1) {
 		return "(" + $1.toUpperCase() + ")";
 	});
 
@@ -312,7 +320,7 @@ function getDOIFromPaperWebURL(originalURL) {
 	return null;
 }
 
-chse.getURISource = function(URI) {
+chse.getURISource = function (URI) {
 	// URIs supported: "website"/"doi"/"paperWeb"
 	// "website" is any website like HyperPhysics
 	// "doi" is literally a DOI url
