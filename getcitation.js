@@ -1,8 +1,8 @@
-/* global chse */
+* global chse */
 
-// type of citation to insert; used by citeDOI
-// short citation = 1; long citation = 2;
-chse.CITATION_TYPE = 1;
+	// type of citation to insert; used by citeDOI
+	// short citation = 1; long citation = 2;
+	chse.CITATION_TYPE = 1;
 
 chse.citeWebsite = function (URL, callback) {
 	// I cannot retrieve author/title of website without using my own external server :(
@@ -118,7 +118,7 @@ function getTitleYearIssuePagesForCitation(metadata) {
 		output = "*" + getShortJournalTitle(metadata) + "*",
 		volume = metadata.volume,
 		page = metadata.page,
-        article = metadata.article-number;
+		article = metadata["article-number"];
 
 	output += " **" + getPublishedYear(metadata); // issue: 10.1021/ci00024a006 gives back 2005, though it was published in 1995 (legacy archives)
 
@@ -126,15 +126,15 @@ function getTitleYearIssuePagesForCitation(metadata) {
 	if (volume) {
 		output += ",** *" + volume;
 		output += (parseInt(issue) ? "* (" + issue + ")" : ",*");
-        output += (((page || article) && parseInt(issue)) ? "," : "");
+		output += (((page || article) && parseInt(issue)) ? "," : "");
 	}
 	console.log(output);
 	// page numbers are absent in ACS Article ASAP service or some other papers (10.1371/journal.pone.0068486)
 	if (page) {
-        output += (volume ? " " : ",** ") + getPageRange(page);
-    } else if (article) {
-        output += (volume ? " " : ",** ") + "No. " + article;
-    }
+		output += (volume ? " " : ",** ") + getPageRange(page);
+	} else if (article) {
+		output += (volume ? " " : ",** ") + "No. " + article;
+	}
 	console.log(output);
 	if (!page && !volume) output += "**";
 
@@ -277,7 +277,7 @@ The following websites are unsupported:
 10.1126 SCIENCE magazine. Structure: science.XXXXXXX, where XXXXXXX is a 7-digit article code.
 10.1161 American Heart Association.
 10.1182 American Society of hematology (e.g. the journal Bloo
- */
+*/
 function getDOIFromPaperWebURL(originalURL) {
 	// remove query parameters
 	var queryMatch = originalURL.match(/[\?#]/),
