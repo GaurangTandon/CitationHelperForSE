@@ -104,7 +104,7 @@ chse.citeDOI = function (doi, callback, metadata) {
 		output += citeTitle(metadata.title[0]) + " ";
 		output += getTitleYearIssuePagesForCitation(metadata);
 
-		output += " [DOI: " + doi + "](https://doi.org/" + doi + ").";
+		output += ". [DOI: " + doi + "](https://doi.org/" + doi + ").";
 	} catch (error) {
 		console.log("citing problem", error);
 		output = chse.ERROR_MSG;
