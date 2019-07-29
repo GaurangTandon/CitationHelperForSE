@@ -117,18 +117,24 @@ function getTitleYearIssuePagesForCitation(metadata) {
 	var issue = metadata.issue,
 		output = "*" + getShortJournalTitle(metadata) + "*",
 		volume = metadata.volume,
-		page = metadata.page;
+		page = metadata.page,
+        article = metadata.article-number;
 
 	output += " **" + getPublishedYear(metadata); // issue: 10.1021/ci00024a006 gives back 2005, though it was published in 1995 (legacy archives)
 
 	// books may not have volumes (10.1007/0-306-48639-3_12)
 	if (volume) {
 		output += ",** *" + volume;
-		output += (parseInt(issue) ? "* (" + issue + ")" : ",*") + (page ? (parseInt(issue) ? "," : "") : "");
+		output += (parseInt(issue) ? "* (" + issue + ")" : ",*");
+        output += (((page || article) && parseInt(issue)) ? "," : "");
 	}
 	console.log(output);
 	// page numbers are absent in ACS Article ASAP service or some other papers (10.1371/journal.pone.0068486)
-	if (page) output += (volume ? " " : ",** ") + getPageRange(page);
+	if (page) {
+        output += (volume ? " " : ",** ") + getPageRange(page);
+    } else if (article) {
+        output += (volume ? " " : ",** ") + "No. " + article;
+    }
 	console.log(output);
 	if (!page && !volume) output += "**";
 
