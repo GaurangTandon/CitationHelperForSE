@@ -1,8 +1,8 @@
-* global chse */
+/* global chse */
 
-	// type of citation to insert; used by citeDOI
-	// short citation = 1; long citation = 2;
-	chse.CITATION_TYPE = 1;
+// type of citation to insert; used by citeDOI
+// short citation = 1; long citation = 2;
+chse.CITATION_TYPE = 1;
 
 chse.citeWebsite = function (URL, callback) {
 	// I cannot retrieve author/title of website without using my own external server :(
@@ -161,8 +161,7 @@ function getShortJournalTitle(metadata) {
 		journalAbbrevs = {
 			"Proceedings of the National Academy of Sciences": "Proc. Acad. Natl. Sci. U. S. A.",
 			"The Journal of Chemical Physics": "J. Chem. Phys.",
-			"Journal of Magnetic Resonance": "J. Magn. Reson.",
-			"Progress in Nuclear Magnetic Resonance Spectroscopy": "Prog. Nucl. Magn. Reson. Spectrosc.",
+			"Phys. Rev. Appl": "Phys. Rev. Appl.",
 		};
 
 	return journalAbbrevs[res] ? journalAbbrevs[res] : res;
