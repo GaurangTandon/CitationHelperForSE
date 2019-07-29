@@ -231,7 +231,7 @@ function citeTitle(title) {
 
 	// some paper titles have a phrase like (iii)
 	// correct it to (III) (ex: 10.1039/C5SC03429A)
-	title = title.replace(/\((i+)\)/, function ($0, $1) {
+	title = title.replace(/\(([ivxl]+)\)/, function ($0, $1) {
 		return "(" + $1.toUpperCase() + ")";
 	});
 
