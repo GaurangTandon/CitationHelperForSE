@@ -104,7 +104,7 @@ chse.citeDOI = function (doi, callback, metadata) {
 		output += citeTitle(metadata.title[0]) + " ";
 		output += getTitleYearIssuePagesForCitation(metadata);
 
-		output += " [DOI: " + doi + "](https://doi.org/" + doi + ").";
+		output += ". [DOI: " + doi + "](https://doi.org/" + doi + ").";
 	} catch (error) {
 		console.log("citing problem", error);
 		output = chse.ERROR_MSG;
@@ -117,18 +117,24 @@ function getTitleYearIssuePagesForCitation(metadata) {
 	var issue = metadata.issue,
 		output = "*" + getShortJournalTitle(metadata) + "*",
 		volume = metadata.volume,
-		page = metadata.page;
+		page = metadata.page,
+		article = metadata["article-number"];
 
 	output += " **" + getPublishedYear(metadata); // issue: 10.1021/ci00024a006 gives back 2005, though it was published in 1995 (legacy archives)
 
 	// books may not have volumes (10.1007/0-306-48639-3_12)
 	if (volume) {
 		output += ",** *" + volume;
-		output += (issue ? "* (" + issue + ")" : "*,") + (page ? (issue ? "," : "") : "");
+		output += (parseInt(issue) ? "* (" + issue + ")" : ",*");
+		output += (((page || article) && parseInt(issue)) ? "," : "");
 	}
 	console.log(output);
 	// page numbers are absent in ACS Article ASAP service or some other papers (10.1371/journal.pone.0068486)
-	if (page) output += (volume ? " " : ",** ") + getPageRange(page);
+	if (page) {
+		output += (volume ? " " : ",** ") + getPageRange(page);
+	} else if (article) {
+		output += (volume ? " " : ",** ") + "No. " + article;
+	}
 	console.log(output);
 	if (!page && !volume) output += "**";
 
@@ -155,8 +161,7 @@ function getShortJournalTitle(metadata) {
 		journalAbbrevs = {
 			"Proceedings of the National Academy of Sciences": "Proc. Acad. Natl. Sci. U. S. A.",
 			"The Journal of Chemical Physics": "J. Chem. Phys.",
-			"Journal of Magnetic Resonance": "J. Magn. Reson.",
-			"Progress in Nuclear Magnetic Resonance Spectroscopy": "Prog. Nucl. Magn. Reson. Spectrosc.",
+			"Phys. Rev. Appl": "Phys. Rev. Appl.",
 		};
 
 	return journalAbbrevs[res] ? journalAbbrevs[res] : res;
@@ -231,7 +236,7 @@ function citeTitle(title) {
 
 	// some paper titles have a phrase like (iii)
 	// correct it to (III) (ex: 10.1039/C5SC03429A)
-	title = title.replace(/\((i+)\)/, function ($0, $1) {
+	title = title.replace(/\(([ivxl]+)\)/, function ($0, $1) {
 		return "(" + $1.toUpperCase() + ")";
 	});
 
@@ -271,7 +276,7 @@ The following websites are unsupported:
 10.1126 SCIENCE magazine. Structure: science.XXXXXXX, where XXXXXXX is a 7-digit article code.
 10.1161 American Heart Association.
 10.1182 American Society of hematology (e.g. the journal Bloo
- */
+*/
 function getDOIFromPaperWebURL(originalURL) {
 	// remove query parameters
 	var queryMatch = originalURL.match(/[\?#]/),
