@@ -48,17 +48,18 @@ http://pubs.rsc.org/en/content/articlelanding/2016/cc/c5cc08252h
 https://doi.org/10.1002/recl.1964083121
 issue raised - https://github.com/CrossRef/rest-api-doc/issues/381
 
-1. pressing enter automatically submits my form to submit Short citation, also, it is hijacking the enter key on title and edit summary fields
-awaiting response - https://stackoverflow.com/questions/50771160/prevent-onclick-event-on-a-button-from-firing-when-hitting-enter-in-a-different
+1. pressing enter automatically submits my form to submit Short citation,
+also, it is hijacking the enter key on title and edit summary fields
+awaiting response - https://stackoverflow.com/questions/50771160
 2. doesn't work => 10.1007/s706-002-8245-0 https://doi.org/10.1021/acs.joc.8b01627
  */
 
 chse.cacheDOI = function (doi, metadata) {
-	var object = JSON.parse(localStorage.getItem(chse.LS_KEY));
+    const object = JSON.parse(localStorage.getItem(chse.LS_KEY));
 
-	object[doi] = metadata;
+    object[doi] = metadata;
 
-	localStorage.setItem(chse.LS_KEY, JSON.stringify(object));
+    localStorage.setItem(chse.LS_KEY, JSON.stringify(object));
 };
 
 chse.journalList = JSON.parse(GM_getResourceText("journalNames"));
